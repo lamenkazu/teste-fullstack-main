@@ -5,7 +5,7 @@ import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 import { ClientesPage } from "./pages/ClientesPage";
 import CsvUploadPage from "./pages/CsvUploadPage";
 import FaturamentoPage from "./pages/FaturamentoPage";
-import VeiculosPage from "./pages/VeiculosPage";
+import { VeiculosPage } from "./pages/VeiculosPage";
 import "./styles.css";
 
 const qc = new QueryClient();
