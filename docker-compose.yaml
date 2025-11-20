@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: parking-pg
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: parking_test
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/seed.sql:/docker-entrypoint-initdb.d/01-seed.sql:ro
+    networks:
+      - parking-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d parking_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  parking-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

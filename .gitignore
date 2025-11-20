@@ -45,3 +45,6 @@ desktop.ini
 ### Ambiente ###
 .env
 .env.*.local
+
+## MD
+CHANGELOG.md

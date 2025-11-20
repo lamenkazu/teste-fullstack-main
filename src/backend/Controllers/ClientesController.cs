@@ -19,7 +19,7 @@ namespace Parking.Api.Controllers
         {
             var q = _db.Clientes.AsQueryable();
             if (!string.IsNullOrWhiteSpace(filtro))
-                q = q.Where(c => c.Nome.Contains(filtro));
+                q = q.Where(c => c.Nome.ToLower().Contains(filtro.ToLower()));
             if (mensalista == "true") q = q.Where(c => c.Mensalista);
             if (mensalista == "false") q = q.Where(c => !c.Mensalista);
 
@@ -38,13 +38,17 @@ namespace Parking.Api.Controllers
             var existe = await _db.Clientes.AnyAsync(c => c.Nome == dto.Nome && c.Telefone == dto.Telefone);
             if (existe) return Conflict("Cliente já existe.");
 
+            // Nova validação: se não for mensalista, valor da mensalidade deve ser null
+            if (!dto.Mensalista && dto.ValorMensalidade.HasValue)
+                return BadRequest("Valor da mensalidade só pode ser definido para clientes mensalistas.");
+
             var c = new Cliente
             {
                 Nome = dto.Nome,
                 Telefone = dto.Telefone,
                 Endereco = dto.Endereco,
                 Mensalista = dto.Mensalista,
-                ValorMensalidade = dto.ValorMensalidade,
+                ValorMensalidade = dto.Mensalista ? dto.ValorMensalidade : null,
             };
             _db.Clientes.Add(c);
             await _db.SaveChangesAsync();
@@ -63,11 +67,16 @@ namespace Parking.Api.Controllers
         {
             var c = await _db.Clientes.FindAsync(id);
             if (c == null) return NotFound();
+
+            // Validação: se não for mensalista, valor da mensalidade deve ser null
+            if (!dto.Mensalista && dto.ValorMensalidade.HasValue)
+                return BadRequest("Valor da mensalidade só pode ser definido para clientes mensalistas.");
+
             c.Nome = dto.Nome;
             c.Telefone = dto.Telefone;
             c.Endereco = dto.Endereco;
             c.Mensalista = dto.Mensalista;
-            c.ValorMensalidade = dto.ValorMensalidade;
+            c.ValorMensalidade = dto.Mensalista ? dto.ValorMensalidade : null;
             await _db.SaveChangesAsync();
             return Ok(c);
         }
