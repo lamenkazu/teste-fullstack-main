@@ -4,6 +4,7 @@ create extension if not exists "uuid-ossp";
 
 drop table if exists "public"."fatura_veiculo" cascade;
 drop table if exists "public"."fatura" cascade;
+drop table if exists "public"."veiculo_cliente_historico" cascade;
 drop table if exists "public"."veiculo" cascade;
 drop table if exists "public"."cliente" cascade;
 
@@ -25,6 +26,15 @@ create table "public"."veiculo"(
   data_inclusao timestamp not null default now(),
   cliente_id uuid not null references "public"."cliente"(id)
 );
+
+create table "public"."veiculo_cliente_historico"(
+  id uuid primary key default uuid_generate_v4(),
+  veiculo_id uuid not null references "public"."veiculo"(id),
+  cliente_id uuid not null references "public"."cliente"(id),
+  inicio timestamp not null,
+  fim timestamp
+);
+create index ix_veiculo_hist_periodo on "public"."veiculo_cliente_historico"(veiculo_id, inicio, coalesce(fim, '9999-12-31'));
 
 create table "public"."fatura"(
   id uuid primary key default uuid_generate_v4(),
@@ -67,4 +77,15 @@ insert into "public"."veiculo"(id, placa, modelo, ano, cliente_id, data_inclusao
 update "public"."veiculo" set cliente_id='22222222-2222-2222-2222-222222222222'
 where placa='ABC1D23';
 update "public"."veiculo" set data_inclusao='2025-08-18' where placa='ABC1D23';
--- BUG atual de faturamento usa o dono ATUAL (Maria) para competência 2025-08; candidato deve corrigir para foto na data de corte.
+
+-- Historico por veiculo/cliente
+insert into "public"."veiculo_cliente_historico"(id, veiculo_id, cliente_id, inicio, fim) values
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1','11111111-1111-1111-1111-111111111111','2025-07-10',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2','22222222-2222-2222-2222-222222222222','2025-07-15',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3','11111111-1111-1111-1111-111111111111','2025-08-01','2025-08-17'),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb4','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa3','22222222-2222-2222-2222-222222222222','2025-08-18',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb5','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa4','33333333-3333-3333-3333-333333333333','2025-07-20',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb6','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5','33333333-3333-3333-3333-333333333333','2025-08-05',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb7','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6','55555555-5555-5555-5555-555555555555','2025-07-01',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb8','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7','55555555-5555-5555-5555-555555555555','2025-08-20',null),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb9','aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8','22222222-2222-2222-2222-222222222222','2025-07-01',null);

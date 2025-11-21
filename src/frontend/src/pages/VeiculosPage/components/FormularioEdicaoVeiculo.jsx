@@ -6,6 +6,7 @@ import {
 	FormGroup,
 	Input,
 	Label,
+	Select,
 } from "../../../components/ui";
 
 export const FormularioEdicaoVeiculo = ({
@@ -13,6 +14,7 @@ export const FormularioEdicaoVeiculo = ({
 	onSubmit,
 	onCancel,
 	isLoading,
+	clientesData,
 }) => {
 	const {
 		register,
@@ -23,6 +25,7 @@ export const FormularioEdicaoVeiculo = ({
 			placa: veiculo?.placa || "",
 			modelo: veiculo?.modelo || "",
 			ano: veiculo?.ano || "",
+			clienteId: veiculo?.clienteId || "",
 		},
 	});
 
@@ -35,6 +38,29 @@ export const FormularioEdicaoVeiculo = ({
 
 	return (
 		<FormContainer onSubmit={handleSubmit(onFormSubmit)}>
+			<FormGroup>
+				<Label htmlFor="clienteId">Cliente *</Label>
+				<Select
+					id="clienteId"
+					$error={errors.clienteId}
+					{...register("clienteId", {
+						required: "Cliente é obrigatório",
+					})}
+				>
+					<option value="">Selecione um cliente</option>
+					{clientesData?.itens?.map((c) => (
+						<option key={c.id} value={c.id}>
+							{c.nome}
+						</option>
+					))}
+				</Select>
+				{errors.clienteId && (
+					<span style={{ color: "red", fontSize: "12px" }}>
+						{errors.clienteId.message}
+					</span>
+				)}
+			</FormGroup>
+
 			<FormGroup>
 				<Label htmlFor="placa">Placa *</Label>
 				<Input

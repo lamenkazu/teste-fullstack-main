@@ -54,6 +54,7 @@ export const VeiculosPage = () => {
 							onSubmit={vm.salvarEdicao}
 							onCancel={vm.fecharModal}
 							isLoading={vm.atualizarMutation.isLoading}
+							clientesData={vm.clientesData}
 						/>
 					</div>
 				)}

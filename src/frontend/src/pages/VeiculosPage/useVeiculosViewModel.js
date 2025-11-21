@@ -114,7 +114,7 @@ export const useVeiculosViewModel = () => {
 			id: veiculoEdicao.id,
 			data: {
 				...dados,
-				clienteId: veiculoEdicao.clienteId,
+				clienteId: dados.clienteId || veiculoEdicao.clienteId,
 			},
 		});
 	};
