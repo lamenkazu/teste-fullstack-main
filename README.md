@@ -1,12 +1,30 @@
-### Stack de Referência
+## Stack de Referência
 - **Backend**: .NET 8 Web API + EF Core + PostgreSQL  
 - **Frontend**: React (Vite) + React Router + React Query  
 - **Sem containers**: a conexão é configurada diretamente em `appsettings.json`.  
 
-> É permitido substituir React por Angular/Vue e/ou trocar o ORM, desde que o escopo seja mantido e as decisões sejam explicadas no README. O boilerplate fornecido está em React com JavaScript.  
+## Estrutura de Pastas
+```
+/src/backend        -> API .NET 8
+/src/frontend       -> React (Vite)
+/scripts/seed.sql   -> Criação e seed do banco
+/scripts/exemplo.csv-> CSV de exemplo
+```
 
-### Execução Local
+## Execução Local
 
+### Com Docker
+1. Tenha o docker ativo em seu ambiente.
+2. Rode na raiz do projeto:
+```bash
+docker compose up # para ver registro dos logs
+
+# ou
+docker compose up -d # para rodar em background sem registro de logs visíveis no terminal.
+```
+> Com isso você executará um banco Postgres, o frontend e o backend com apenas um comando. Caso seja a primeira execução, o seed.sql será automaticamente executado.
+
+### Sem Docker
 #### Banco PostgreSQL
 1. Crie um banco local (ex.: `parking_test`) e ajuste a `ConnectionString` em `appsettings.json`, se necessário.  
 2. Rode o seed pelo terminal (bash/WSL):  
@@ -32,13 +50,7 @@ npm run dev
 A aplicação ficará disponível em `http://localhost:5173`.  
 Configure `VITE_API_URL` caso seja necessário apontar para outra porta.  
 
-### 4.3 Estrutura de Pastas
-```
-/src/backend        -> API .NET 8
-/src/frontend       -> React (Vite)
-/scripts/seed.sql   -> Criação e seed do banco
-/scripts/exemplo.csv-> CSV de exemplo
-```
+
 
 # Registro Técnico
 
