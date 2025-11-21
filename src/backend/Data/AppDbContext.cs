@@ -1,5 +1,4 @@
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Parking.Api.Models;
 
 namespace Parking.Api.Data
@@ -56,6 +55,7 @@ namespace Parking.Api.Data
                 e.Property(x => x.Valor).HasColumnName("valor");
                 e.Property(x => x.CriadaEm).HasColumnName("criada_em");
                 e.Property(x => x.Observacao).HasColumnName("observacao");
+                e.HasOne(x => x.Cliente).WithMany().HasForeignKey(x => x.ClienteId);
                 e.HasMany(x => x.Veiculos).WithOne().HasForeignKey(x => x.FaturaId);
                 e.HasIndex(x => new { x.ClienteId, x.Competencia }).IsUnique();
             });

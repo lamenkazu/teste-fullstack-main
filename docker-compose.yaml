@@ -1,4 +1,4 @@
-services:
+﻿services:
   postgres:
     image: postgres:17
     container_name: parking-pg
@@ -19,6 +19,36 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: parking-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=parking_test;Username=postgres;Password=postgres
+    ports:
+      - "5000:5000"
+    networks:
+      - parking-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: parking-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "5173:5173"
+    networks:
+      - parking-net
 
 networks:
   parking-net:

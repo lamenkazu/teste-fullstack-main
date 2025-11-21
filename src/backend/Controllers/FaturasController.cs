@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Parking.Api.Data;
@@ -48,12 +49,16 @@ namespace Parking.Api.Controllers
             var list = new List<FaturaListItemDto>();
 
             foreach (var f in faturas) {
-                var part = f.Competencia.Split('-');
-                var ano = int.Parse(part[0]);
-                var mes = int.Parse(part[1]);
-                var diasMes = DateTime.DaysInMonth(ano, mes);
-                var inicio = new DateTime(ano, mes, 1);
-                var fim = new DateTime(ano, mes, diasMes, 23, 59, 59, DateTimeKind.Utc);
+                var competenciaDateStr = $"{f.Competencia}-01";
+                if (!DateTime.TryParseExact(competenciaDateStr, "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var competenciaDate))
+                {
+                    continue;
+                }
+
+                var diasMes = DateTime.DaysInMonth(competenciaDate.Year, competenciaDate.Month);
+                var inicio = new DateTime(competenciaDate.Year, competenciaDate.Month, 1);
+                var fim = new DateTime(competenciaDate.Year, competenciaDate.Month, diasMes, 23, 59, 59, DateTimeKind.Utc);
 
                 var veiculosResumo = new List<FaturaVeiculoResumoDto>();
                 decimal valorTotal = 0m;
